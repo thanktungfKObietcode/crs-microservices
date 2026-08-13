@@ -1,0 +1,84 @@
+
+# Cấu hình cổng và bảng định tuyến cho API Gateway
+# Điểm vào duy nhất của hệ thống
+
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            # Auth Service
+            - id: auth-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/auth/**
+              filters:
+                - RewritePath=/api/auth/(?<segment>.*), /auth/${segment}
+
+            # Course Service - List
+            - id: course-service-list
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/courses
+              filters:
+                - RewritePath=/api/courses, /courses
+
+            # Course Service - Detail
+            - id: course-service-detail
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/courses/**
+              filters:
+                - RewritePath=/api/courses/(?<segment>.*), /courses/${segment}
+
+            # Registration Service - List
+            - id: registration-service-list
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/registrations
+              filters:
+                - RewritePath=/api/registrations, /registrations
+
+            # Registration Service - Detail
+            - id: registration-service-detail
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/registrations/**
+              filters:
+                - RewritePath=/api/registrations/(?<segment>.*), /registrations/${segment}
+
+            # Public Course API cho Partner
+            - id: course-service-partner
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/public/courses
+              filters:
+                - RewritePath=/api/public/courses, /courses
+
+      # Tạo trước để buổi sau không cần cập nhật
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+
+jwt:
+  secret: CRS-Microservices-Secret-Key-Nam-3-Hoc-Ky-2026-Doi-Trong-Thuc-Te
+
+partner:
+  api-key: crs-partner-key-2026
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway
