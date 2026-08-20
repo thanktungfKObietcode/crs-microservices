@@ -1,4 +1,3 @@
-
 # Cấu hình cổng và bảng định tuyến cho API Gateway
 # Điểm vào duy nhất của hệ thống
 
@@ -10,6 +9,7 @@ spring:
     gateway:
       server:
         webflux:
+
           routes:
 
             # Auth Service
@@ -48,9 +48,7 @@ spring:
             - id: registration-service-detail
               uri: http://localhost:8083
               predicates:
-                - Path=/api/registrations/**
-              filters:
-                - RewritePath=/api/registrations/(?<segment>.*), /registrations/${segment}
+                - Path=/api/registrations/(?<segment>.*), /registrations/${segment}
 
             # Public Course API cho Partner
             - id: course-service-partner
@@ -60,16 +58,16 @@ spring:
               filters:
                 - RewritePath=/api/public/courses, /courses
 
-      # Tạo trước để buổi sau không cần cập nhật
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://localhost:5173"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "*"
+          # CORS - tập trung tại API Gateway
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:5173"
+                allowedMethods:
+                  - "*"
+                allowedHeaders:
+                  - "*"
 
 jwt:
   secret: CRS-Microservices-Secret-Key-Nam-3-Hoc-Ky-2026-Doi-Trong-Thuc-Te
